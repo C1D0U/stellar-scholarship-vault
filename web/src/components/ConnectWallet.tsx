@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import type { WalletState } from '@/hooks/useWallet';
 
@@ -20,17 +21,17 @@ export default function ConnectWallet({
 
   if (publicKey) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           onClick={copy}
           title="Copy full address"
-          className="rounded bg-gray-100 px-3 py-1 font-mono text-sm text-gray-700 transition-colors hover:bg-gray-200"
+          className="h-10 rounded-md border border-[#2F3A33] bg-[#0F1411] px-3 font-mono text-sm text-[#F5F0E6] transition hover:border-[#D6A84F]"
         >
-          {copied ? 'Copied!' : `${publicKey.slice(0, 6)}…${publicKey.slice(-6)}`}
+          {copied ? 'Copied!' : `${publicKey.slice(0, 6)}...${publicKey.slice(-6)}`}
         </button>
         <button
           onClick={disconnect}
-          className="text-sm text-red-500 hover:underline"
+          className="h-10 whitespace-nowrap rounded-md border border-[#EF4444]/35 px-4 text-sm font-semibold text-[#FCA5A5] transition hover:bg-[#EF4444]/10"
         >
           Disconnect
         </button>
@@ -39,15 +40,15 @@ export default function ConnectWallet({
   }
 
   return (
-    <div className="text-right">
+    <div className="text-left lg:text-right">
       <button
         onClick={connect}
         disabled={connecting}
-        className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+        className="h-11 whitespace-nowrap rounded-md bg-[#D6A84F] px-5 text-sm font-semibold text-[#0F1411] shadow-lg shadow-[#D6A84F]/10 transition hover:bg-[#E7BE66] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {connecting ? 'Connecting…' : 'Connect Freighter'}
+        {connecting ? 'Connecting...' : 'Connect Freighter'}
       </button>
-      {error && <p className="mt-2 max-w-xs text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-2 max-w-xs text-sm text-[#FCA5A5]">{error}</p>}
     </div>
   );
 }

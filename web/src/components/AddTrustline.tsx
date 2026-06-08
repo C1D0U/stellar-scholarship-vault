@@ -1,7 +1,8 @@
 'use client';
+
 import { useState } from 'react';
-import { buildAddUsdcTrustlineXDR } from '@/lib/trustline';
 import { signAndSubmit } from '@/lib/sign';
+import { buildAddUsdcTrustlineXDR } from '@/lib/trustline';
 
 type Status = 'idle' | 'working' | 'done' | 'error';
 
@@ -30,7 +31,11 @@ export default function AddTrustline({
   };
 
   if (status === 'done') {
-    return <p className="text-sm text-emerald-600">USDC trustline added.</p>;
+    return (
+      <p className="flex h-10 items-center rounded-md border border-[#22C55E]/30 bg-[#22C55E]/10 px-3 text-sm font-semibold text-[#86EFAC]">
+        USDC trustline added.
+      </p>
+    );
   }
 
   return (
@@ -38,11 +43,11 @@ export default function AddTrustline({
       <button
         onClick={add}
         disabled={status === 'working'}
-        className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+        className="h-10 whitespace-nowrap rounded-md border border-[#2F3A33] bg-[#0F1411] px-4 text-sm font-semibold text-[#F5F0E6] transition hover:border-[#D6A84F] hover:text-[#D6A84F] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {status === 'working' ? 'Adding USDC trustline…' : 'Add USDC trustline'}
+        {status === 'working' ? 'Adding trustline...' : 'Add USDC trustline'}
       </button>
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-2 text-sm text-[#FCA5A5]">{error}</p>}
     </div>
   );
 }

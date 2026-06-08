@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { fetchBalances, type Balances } from '@/lib/balances';
 
@@ -41,37 +42,46 @@ export default function BalanceCard({
 
   if (loading) {
     return (
-      <div className="mt-4 grid animate-pulse grid-cols-2 gap-4">
-        <div className="h-20 rounded bg-gray-200" />
-        <div className="h-20 rounded bg-gray-200" />
+      <div className="mt-5 grid animate-pulse gap-4 sm:grid-cols-2">
+        <div className="h-24 rounded-lg bg-[#1E2821]" />
+        <div className="h-24 rounded-lg bg-[#1E2821]" />
       </div>
     );
   }
 
   if (result.failed) {
-    return <p className="mt-4 text-sm text-red-500">Failed to load balances.</p>;
+    return (
+      <p className="mt-5 rounded-lg border border-[#EF4444]/35 bg-[#EF4444]/10 p-3 text-sm text-[#FCA5A5]">
+        Failed to load balances.
+      </p>
+    );
   }
 
   const balances = result.balances;
 
   if (balances && !balances.funded) {
     return (
-      <p className="mt-4 rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-        This account is not funded yet. Click &quot;Fund with Friendbot&quot; above.
+      <p className="mt-5 rounded-lg border border-[#D6A84F]/35 bg-[#D6A84F]/10 p-3 text-sm text-[#F4D48B]">
+        This account is not funded yet. Use Friendbot to activate it on testnet.
       </p>
     );
   }
 
   return (
-    <div className="mt-4 grid grid-cols-2 gap-4">
-      <div className="rounded border border-gray-200 bg-white p-4">
-        <p className="text-xs uppercase tracking-wide text-gray-500">XLM</p>
-        <p className="text-2xl font-bold text-gray-900">{balances?.xlm ?? '0.00'}</p>
-      </div>
-      <div className="rounded border border-gray-200 bg-white p-4">
-        <p className="text-xs uppercase tracking-wide text-gray-500">USDC</p>
-        <p className="text-2xl font-bold text-gray-900">{balances?.usdc ?? '0.00'}</p>
-      </div>
+    <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <BalanceTile label="XLM" value={balances?.xlm ?? '0.00'} />
+      <BalanceTile label="USDC" value={balances?.usdc ?? '0.00'} />
+    </div>
+  );
+}
+
+function BalanceTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-[#2F3A33] bg-[#1E2821] p-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#A8B3A3]">
+        {label}
+      </p>
+      <p className="mt-3 text-2xl font-semibold text-[#F5F0E6]">{value}</p>
     </div>
   );
 }

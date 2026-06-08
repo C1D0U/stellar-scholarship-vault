@@ -1,12 +1,13 @@
 'use client';
+
 import { useState } from 'react';
+import { NETWORK_PASSPHRASE } from '@/lib/stellar';
 import {
   buildPaymentXDR,
-  submitSignedXDR,
   pollTransaction,
+  submitSignedXDR,
   type AssetCode,
 } from '@/lib/payment';
-import { NETWORK_PASSPHRASE } from '@/lib/stellar';
 
 type Status =
   | 'idle'
@@ -18,13 +19,13 @@ type Status =
   | 'error';
 
 const STATUS_LABEL: Record<Status, string> = {
-  idle: 'Send',
-  building: 'Building transaction…',
-  signing: 'Waiting for Freighter…',
-  submitting: 'Submitting…',
-  polling: 'Confirming on-chain…',
-  success: 'Send',
-  error: 'Send',
+  idle: 'Release award payment',
+  building: 'Building transaction...',
+  signing: 'Waiting for Freighter...',
+  submitting: 'Submitting...',
+  polling: 'Confirming on-chain...',
+  success: 'Release award payment',
+  error: 'Release award payment',
 };
 
 export default function SendPayment({
@@ -77,72 +78,83 @@ export default function SendPayment({
   };
 
   return (
-    <div className="mt-6 rounded border border-gray-200 bg-white p-6">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">Send Payment</h2>
+    <div className="rounded-lg border border-[#2F3A33] bg-[#161D18] p-5 shadow-2xl shadow-black/20">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#D6A84F]">
+          Award disbursement
+        </p>
+        <h2 className="mt-2 text-xl font-semibold text-[#F5F0E6]">
+          Send Scholarship Payment
+        </h2>
+      </div>
 
-      <div className="space-y-4">
-        <div>
-          <label className="mb-1 block text-sm text-gray-600">Asset</label>
+      <div className="mt-5 grid gap-4">
+        <label>
+          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-[#A8B3A3]">
+            Asset
+          </span>
           <select
             value={asset}
-            onChange={(e) => setAsset(e.target.value as AssetCode)}
-            className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900"
+            onChange={(event) => setAsset(event.target.value as AssetCode)}
+            className="h-11 w-full rounded-md border border-[#2F3A33] bg-[#0F1411] px-3 text-sm text-[#F5F0E6] outline-none transition focus:border-[#D6A84F] focus:ring-2 focus:ring-[#D6A84F]/20"
           >
             <option value="XLM">XLM</option>
-            <option value="USDC">USDC (needs a trustline)</option>
+            <option value="USDC">USDC (requires trustline)</option>
           </select>
-        </div>
+        </label>
 
-        <div>
-          <label className="mb-1 block text-sm text-gray-600">
+        <label>
+          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-[#A8B3A3]">
             Destination address
-          </label>
+          </span>
           <input
             type="text"
-            placeholder="G… (must be an existing funded testnet account)"
+            placeholder="Funded testnet account address"
             value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900"
+            onChange={(event) => setDestination(event.target.value)}
+            className="h-11 w-full rounded-md border border-[#2F3A33] bg-[#0F1411] px-3 font-mono text-sm text-[#F5F0E6] outline-none transition placeholder:text-[#A8B3A3]/60 focus:border-[#D6A84F] focus:ring-2 focus:ring-[#D6A84F]/20"
           />
-        </div>
+        </label>
 
-        <div>
-          <label className="mb-1 block text-sm text-gray-600">Amount</label>
+        <label>
+          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-[#A8B3A3]">
+            Amount
+          </span>
           <input
             type="number"
             placeholder="0.00"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900"
+            onChange={(event) => setAmount(event.target.value)}
+            className="h-11 w-full rounded-md border border-[#2F3A33] bg-[#0F1411] px-3 text-sm text-[#F5F0E6] outline-none transition placeholder:text-[#A8B3A3]/60 focus:border-[#D6A84F] focus:ring-2 focus:ring-[#D6A84F]/20"
           />
-        </div>
+        </label>
 
         <button
           onClick={handleSend}
           disabled={busy || !destination || !amount}
-          className="w-full rounded bg-emerald-600 py-3 font-medium text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
+          className="h-11 w-full whitespace-nowrap rounded-md bg-[#D6A84F] px-5 text-sm font-semibold text-[#0F1411] transition hover:bg-[#E7BE66] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {STATUS_LABEL[status]}
         </button>
       </div>
 
       {status === 'success' && (
-        <div className="mt-4 rounded border border-emerald-200 bg-emerald-50 p-3">
-          <p className="font-medium text-emerald-700">Payment confirmed!</p>
+        <div className="mt-4 rounded-lg border border-[#22C55E]/35 bg-[#22C55E]/10 p-3">
+          <p className="font-semibold text-[#86EFAC]">Payment confirmed.</p>
           <a
             href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="break-all text-sm text-indigo-600 hover:underline"
+            className="mt-1 block break-all text-sm text-[#D6A84F] hover:underline"
           >
-            View on Stellar Expert →
+            View on Stellar Expert
           </a>
         </div>
       )}
 
       {status === 'error' && (
-        <div className="mt-4 rounded border border-red-200 bg-red-50 p-3">
-          <p className="text-sm text-red-700">{errorMsg}</p>
+        <div className="mt-4 rounded-lg border border-[#EF4444]/35 bg-[#EF4444]/10 p-3">
+          <p className="text-sm text-[#FCA5A5]">{errorMsg}</p>
         </div>
       )}
     </div>

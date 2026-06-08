@@ -1,9 +1,10 @@
 'use client';
-import { useState, useCallback } from 'react';
+
+import { useCallback, useState } from 'react';
 
 const TIMEOUT_MS = 3000;
 
-// Freighter API calls can hang if the extension is missing — race them with a timeout.
+// Freighter API calls can hang if the extension is missing, so race them with a timeout.
 function withTimeout<T>(p: Promise<T>, fallback: T, ms = TIMEOUT_MS): Promise<T> {
   return Promise.race([
     p,
@@ -28,7 +29,7 @@ export function useWallet(): WalletState {
     setConnecting(true);
     setError(null);
     try {
-      // Dynamic import only — a static import breaks SSR (browser globals).
+      // Dynamic import only; a static import breaks SSR because Freighter uses browser globals.
       const freighter = await import('@stellar/freighter-api');
 
       const connected = await withTimeout(freighter.isConnected(), {
@@ -40,11 +41,10 @@ export function useWallet(): WalletState {
         );
       }
 
-      // requestAccess() prompts the user and returns their address (Freighter v6).
       const access = await freighter.requestAccess();
       if (access.error) throw new Error(access.error);
       if (!access.address) {
-        throw new Error('No address returned — did you approve the request?');
+        throw new Error('No address returned. Did you approve the request?');
       }
 
       setPublicKey(access.address);
